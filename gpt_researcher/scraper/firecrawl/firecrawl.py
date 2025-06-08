@@ -52,9 +52,9 @@ class FireCrawl:
         try:
 
             json_config = JsonConfig(
-                prompt=self.prompt
+                prompt=self.prompt`
             )
-            response = self.firecrawl.scrape_url(self.link, formats=["markdown"],json_options=json_config)
+            response = self.firecrawl.scrape_url(self.link, formats=["markdown"], json_options=json_config)
 
             # Check if the page has been scraped success
             if "error" in response:
