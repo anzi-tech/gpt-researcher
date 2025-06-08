@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import os
 from ..utils import get_relevant_images
+from pydantic import BaseModel, Field
 
 class FireCrawl:
 
@@ -49,7 +50,19 @@ class FireCrawl:
         """
 
         try:
-            response = self.firecrawl.scrape_url(url=self.link, formats=["markdown"])
+            
+            class ExtractSchema(BaseModel):
+                company_mission: str
+                supports_sso: bool
+                is_open_source: bool
+                is_in_yc: bool
+
+            json_config = JsonConfig(
+                extractionSchema=ExtractSchema.model_json_schema(),
+                mode="llm-extraction",
+                pageOptions={"onlyMainContent": True}
+            )
+            response = self.firecrawl.scrape_url(self.link, formats=["markdown"],json_options=json_config)
 
             # Check if the page has been scraped success
             if "error" in response:
