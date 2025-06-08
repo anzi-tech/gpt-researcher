@@ -1,13 +1,13 @@
 from bs4 import BeautifulSoup
 import os
 from ..utils import get_relevant_images
-from pydantic import BaseModel, Field
 
 class FireCrawl:
 
-    def __init__(self, link, session=None):
+    def __init__(self, link, prompt, session=None):
         self.link = link
         self.session = session
+        self.prompt = prompt
         from firecrawl import FirecrawlApp
         self.firecrawl = FirecrawlApp(api_key=self.get_api_key(), api_url=self.get_server_url())
 
@@ -50,17 +50,9 @@ class FireCrawl:
         """
 
         try:
-            
-            class ExtractSchema(BaseModel):
-                company_mission: str
-                supports_sso: bool
-                is_open_source: bool
-                is_in_yc: bool
 
             json_config = JsonConfig(
-                extractionSchema=ExtractSchema.model_json_schema(),
-                mode="llm-extraction",
-                pageOptions={"onlyMainContent": True}
+                prompt=self.prompt
             )
             response = self.firecrawl.scrape_url(self.link, formats=["markdown"],json_options=json_config)
 
